@@ -3,54 +3,49 @@ import { useAuthContext } from "./useAuthContext";
 
 export const useLogin = () => {
     const [error, setError] = useState(null);
-    const [isLoading, setIsLoading] = useState(null);
+    const [isLoading, setIsLoading] = useState(false); // Initialize as false
     const { dispatch } = useAuthContext();
 
     const login = async (email, password) => {
         setIsLoading(true);
         setError(null);
 
-        // const response = await fetch('/api/user/login', {
-        //     method: 'POST',
-        //     headers: {'Content-Type': 'application/json'},
-        //     body: JSON.stringify({email, password})
-        // })
         const xhr = new XMLHttpRequest();
-        const url = 'http://127.0.0.1:8000/api/recevicec/'; // Replace with your Django API endpoint
+        const url = 'http://localhost:8000/api/receivec/'; // Replace with your Django API endpoint
         xhr.open('POST', url, true);
         xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
 
         xhr.onload = () => {
-        if (xhr.status === 200) {
-            console.log('Request successful:', xhr.responseText);
-        } else {
-            console.error('Request failed:', xhr.status, xhr.statusText);
-        }
+            if (xhr.status === 200) {
+                const json = JSON.parse(xhr.responseText);
+
+                // Check if there's an error in the response
+                if (json.error) {
+                    setError(json.error);
+                } else {
+                    // Save the user to local storage
+                    localStorage.setItem('user', JSON.stringify(json));
+
+                    // Update the auth context
+                    dispatch({ type: 'LOGIN', payload: json });
+                }
+            } else {
+                console.error('Request failed:', xhr.status, xhr.statusText);
+                setError('Request failed');
+            }
+
+            setIsLoading(false);
         };
 
         xhr.onerror = () => {
-        console.error('Network error');
+            console.error('Network error');
+            setError('Network error');
+            setIsLoading(false);
         };
 
-        const data = JSON.stringify({email, password});
-        xhr.send(data)
+        const data = JSON.stringify({ email, password });
+        xhr.send(data);
+    };
 
-        const json = await xhr.json()
-
-        if(!xhr.ok){
-            setIsLoading(false);
-            setError(json.error)
-        }
-        if (xhr.ok) {
-            //save the user to local storage
-            localStorage.setItem('user', JSON.stringify(json))
-
-            //update the auth context
-            dispatch({type: 'LOGIN', payload: json})
-
-            setIsLoading(false);
-        }
-    }
-
-    return {login, isLoading, error}
-}
+    return { login, isLoading, error };
+};
