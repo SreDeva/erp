@@ -1,37 +1,89 @@
 import { useState } from "react";
 import { useAuthContext } from "./useAuthContext";
 
+// export const useSignup = () => {
+//     const [error, setError] = useState(null);
+//     const [isLoading, setIsLoading] = useState(null);
+//     const { dispatch } = useAuthContext();
+
+//     const signup = async (email, password) => {
+//         setIsLoading(true);
+//         setError(null);
+
+//         const response = await fetch('/api/user/signup', {
+//             method: 'POST',
+//             headers: {'Content-Type': 'application/json'},
+//             body: JSON.stringify({email, password})
+//         })
+
+//         const json = await response.json()
+
+//         if(!response.ok){
+//             setIsLoading(false);
+//             setError(json.error)
+//         }
+//         if (response.ok) {
+//             //save the user to local storage
+//             localStorage.setItem('user', JSON.stringify(json))
+
+//             //update the auth context
+//             dispatch({type: 'LOGIN', payload: json})
+
+//             setIsLoading(false);
+//         }
+//     }
+
+//     return {signup, isLoading, error}
+// }
+
+import { useState } from "react";
+import { useAuthContext } from "./useAuthContext";
+
 export const useSignup = () => {
     const [error, setError] = useState(null);
-    const [isLoading, setIsLoading] = useState(null);
+    const [isLoading, setIsLoading] = useState(false); // Initialize as false
     const { dispatch } = useAuthContext();
 
-    const signup = async (email, password) => {
+    const login = async (email, password) => {
         setIsLoading(true);
         setError(null);
 
-        const response = await fetch('/api/user/signup', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({email, password})
-        })
+        const xhr = new XMLHttpRequest();
+        const url = 'http://localhost:8000/api/receivec/'; // Replace with your Django API endpoint
+        xhr.open('POST', url, true);
+        xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
 
-        const json = await response.json()
+        xhr.onload = () => {
+            if (xhr.status === 200) {
+                const json = JSON.parse(xhr.responseText);
 
-        if(!response.ok){
+                // Check if there's an error in the response
+                if (json.error) {
+                    setError(json.error);
+                } else {
+                    // Save the user to local storage
+                    localStorage.setItem('user', JSON.stringify(json));
+
+                    // Update the auth context
+                    dispatch({ type: 'LOGIN', payload: json });
+                }
+            } else {
+                console.error('Request failed:', xhr.status, xhr.statusText);
+                setError('Request failed');
+            }
+
             setIsLoading(false);
-            setError(json.error)
-        }
-        if (response.ok) {
-            //save the user to local storage
-            localStorage.setItem('user', JSON.stringify(json))
+        };
 
-            //update the auth context
-            dispatch({type: 'LOGIN', payload: json})
-
+        xhr.onerror = () => {
+            console.error('Network error');
+            setError('Network error');
             setIsLoading(false);
-        }
-    }
+        };
 
-    return {signup, isLoading, error}
-}
+        const data = JSON.stringify({ email, password });
+        xhr.send(data);
+    };
+
+    return { signup, isLoading, error };
+};
