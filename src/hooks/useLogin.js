@@ -10,19 +10,38 @@ export const useLogin = () => {
         setIsLoading(true);
         setError(null);
 
-        const response = await fetch('/api/user/login', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({email, password})
-        })
+        // const response = await fetch('/api/user/login', {
+        //     method: 'POST',
+        //     headers: {'Content-Type': 'application/json'},
+        //     body: JSON.stringify({email, password})
+        // })
+        const xhr = new XMLHttpRequest();
+        const url = 'http://127.0.0.1:8000/api/recevicec/'; // Replace with your Django API endpoint
+        xhr.open('POST', url, true);
+        xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
 
-        const json = await response.json()
+        xhr.onload = () => {
+        if (xhr.status === 200) {
+            console.log('Request successful:', xhr.responseText);
+        } else {
+            console.error('Request failed:', xhr.status, xhr.statusText);
+        }
+        };
 
-        if(!response.ok){
+        xhr.onerror = () => {
+        console.error('Network error');
+        };
+
+        const data = JSON.stringify({email, password});
+        xhr.send(data)
+
+        const json = await xhr.json()
+
+        if(!xhr.ok){
             setIsLoading(false);
             setError(json.error)
         }
-        if (response.ok) {
+        if (xhr.ok) {
             //save the user to local storage
             localStorage.setItem('user', JSON.stringify(json))
 
