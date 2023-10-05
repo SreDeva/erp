@@ -36,9 +36,6 @@ import { useAuthContext } from "./useAuthContext";
 //     return {signup, isLoading, error}
 // }
 
-import { useState } from "react";
-import { useAuthContext } from "./useAuthContext";
-
 export const useSignup = () => {
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false); // Initialize as false
@@ -49,7 +46,7 @@ export const useSignup = () => {
         setError(null);
 
         const xhr = new XMLHttpRequest();
-        const url = 'http://localhost:8000/api/receivec/'; // Replace with your Django API endpoint
+        const url = 'http://localhost:8000/api/user/signup/'; // Replace with your Django API endpoint
         xhr.open('POST', url, true);
         xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
 
