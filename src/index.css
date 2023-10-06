@@ -80,6 +80,13 @@ input {
   border-radius: 4px;
   box-sizing: border-box;
 }
+.create{
+  margin: 20px;
+}
+.creatediv{
+  justify-content: center;
+  align-items: center;
+}
 form button {
   background: var(--primary);
   border: 0;

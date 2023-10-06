@@ -5,6 +5,7 @@ import Login from './pages/login';
 import Home from './pages/Home';
 import Signup from './pages/signup';
 import AdminPage from './pages/admin';
+import ProfileForm from './pages/createProfile';
 
 function App() {
   const { user } = useAuthContext()
@@ -24,7 +25,11 @@ function App() {
           />
           <Route 
             path='/signup'
-            element={!user ? <Signup /> : <Navigate to="/" />}
+            element={!user ? <Signup /> : <Navigate to="/createProfile" />}
+          />
+          <Route 
+            path='/createProfile'
+            element={ <ProfileForm />}
           />
           <Route 
             path='/admin'

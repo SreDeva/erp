@@ -7,6 +7,14 @@ export const studentsReduser = (state, action) => {
         case 'SET_STUDENT':
             return {
                 students: action.payload
+           }
+        case 'CREATE_WORKOUT':
+            return {
+                students: [action.payload, ...state.students]
+            }
+        case 'DELETE_WORKOUT':
+            return {
+                students: state.students.filter((s) => s._id !== action.payload._id)
             }
         default:
             return state;
