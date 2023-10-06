@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useStudentsContext } from "../hooks/useStudentContext"
 import { useAuthContext } from '../hooks/useAuthContext'
+import { Navigate } from "react-router-dom";
 
 const ProfileForm = () => {
   const { dispatch } = useStudentsContext()
@@ -9,24 +10,29 @@ const ProfileForm = () => {
   const [name, setName] = useState('')
   const [roll_no, setRoll_no] = useState('')
   const [reg_no, setReg_no] = useState('')
-  const  [branch, setBranch] = useState()
+  const  [degree, setBranch] = useState()
   const [batch, setBatch] = useState()
   const [Class, setClass] = useState()
   const [dob, setDOB] = useState()
   const [gender, setGender] = useState()
   const [address, setAddress] = useState()
+  const [phone_no, setPhoneNo] = useState()
+  const [email, setEmail] = useState()
   const [error, setError] = useState(null)
   const [emptyFields, setEmptyFields] = useState([])
+  const [redirectToProfile, setRedirectToProfile] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    
 
     if (!user) {
       setError('You must be logged in')
       return
     }
 
-    const student = {name, roll_no, reg_no, branch, batch, Class, dob, gender, address}
+    const student = {name, dob, gender, email, roll_no, reg_no, address, phone_no, batch, degree, Class}
 
     const response = await fetch('/api/student', {
       method: 'POST',
@@ -52,10 +58,17 @@ const ProfileForm = () => {
       setDOB('')
       setGender('')
       setAddress('')
+      setPhoneNo(null)
+      setEmail('')
       setError(null)
       setEmptyFields([])
       dispatch({type: 'CREATE_STUDENT', payload: json})
+      setRedirectToProfile(true);
     }
+  }
+
+  if (redirectToProfile) {
+    return <Navigate to="/" />;
   }
 
   return (
@@ -90,7 +103,7 @@ const ProfileForm = () => {
         <input 
             type="text"
             onChange={(e) => setBranch(e.target.value)}
-            value={branch}
+            value={degree}
             className={emptyFields.includes('reps') ? 'error' : ''}
         />
         <label>Batch :</label>
@@ -126,6 +139,20 @@ const ProfileForm = () => {
             type="text"
             onChange={(e) => setAddress(e.target.value)}
             value={address}
+            className={emptyFields.includes('reps') ? 'error' : ''}
+        />
+        <label>Phone No :</label>
+        <input 
+            type="number"
+            onChange={(e) => setPhoneNo(e.target.value)}
+            value={phone_no}
+            className={emptyFields.includes('reps') ? 'error' : ''}
+        />
+        <label>Email :</label>
+        <input 
+            type="email"
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
             className={emptyFields.includes('reps') ? 'error' : ''}
         />
 

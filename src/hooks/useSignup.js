@@ -1,34 +1,34 @@
 import { useState } from 'react'
 import { useAuthContext } from './useAuthContext'
-const validator = require('validator')
+//const validator = require('validator')
 
 export const useSignup = () => {
   const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(null)
   const { dispatch } = useAuthContext()
 
-  //const signup = async (email, password) => {
-  const signup = async (email, reg, password, con_password) => {
+  const signup = async (email, password) => {
+  //const signup = async (email, reg, password, con_password) => {
     setIsLoading(true)
     setError(null)
-    if (!email || !password || !reg || !con_password) {
-      throw Error('All fields must be filled')
-    }
-    if (!validator.isEmail(email)) {
-      throw Error('Email not valid')
-    }
-    if (!validator.isStrongPassword(password)) {
-      throw Error('Password not strong enough')
-    }
-    if (!password === con_password){
-      throw Error('Confirm password must be same as password')
-    }
+    // if (!email || !password || !reg || !con_password) {
+    //   throw Error('All fields must be filled')
+    // }
+    // if (!validator.isEmail(email)) {
+    //   throw Error('Email not valid')
+    // }
+    // if (!validator.isStrongPassword(password)) {
+    //   throw Error('Password not strong enough')
+    // }
+    // if (!password === con_password){
+    //   throw Error('Confirm password must be same as password')
+    // }
 
     const response = await fetch('/api/user/signup', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      //body: JSON.stringify({ email, password }),
-      body: JSON.stringify({ email, reg, password, con_password })
+      body: JSON.stringify({ email, password }),
+      //body: JSON.stringify({ email, reg, password, con_password })
     })
     const json = await response.json()
 
